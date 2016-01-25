@@ -960,6 +960,40 @@ public class WeekView extends View {
         }
     }
 
+    public void refreshEvents() {
+        // Clear events.
+        mEventRects.clear();
+        sortAndCacheEvents(mPreviousPeriodEvents);
+        sortAndCacheEvents(mCurrentPeriodEvents);
+        sortAndCacheEvents(mNextPeriodEvents);
+
+        // Prepare to calculate positions of each events.
+        List<EventRect> tempEvents = mEventRects;
+        mEventRects = new ArrayList<>();
+
+        // Iterate through each day with events to calculate the position of the events.
+        while (tempEvents.size() > 0) {
+            ArrayList<EventRect> eventRects = new ArrayList<>(tempEvents.size());
+
+            // Get first event for a day.
+            EventRect eventRect1 = tempEvents.remove(0);
+            eventRects.add(eventRect1);
+
+            int i = 0;
+            while (i < tempEvents.size()) {
+                // Collect all other events for same day.
+                EventRect eventRect2 = tempEvents.get(i);
+                if (isSameDay(eventRect1.event.getStartTime(), eventRect2.event.getStartTime())) {
+                    tempEvents.remove(i);
+                    eventRects.add(eventRect2);
+                } else {
+                    i++;
+                }
+            }
+            computePositionOfEvents(eventRects);
+        }
+    }
+
     /**
      * Cache the event for smooth scrolling functionality.
      * @param event The event to cache.
