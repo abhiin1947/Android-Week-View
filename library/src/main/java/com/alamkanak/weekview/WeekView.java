@@ -148,6 +148,8 @@ public class WeekView extends View {
     private DateTimeInterpreter mDateTimeInterpreter;
     private ScrollListener mScrollListener;
 
+    private static final Integer mSync = 1;
+
     private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
 
         @Override
@@ -582,8 +584,10 @@ public class WeekView extends View {
 
         // Clear the cache for event rectangles.
         if (mEventRects != null) {
-            for (EventRect eventRect: mEventRects) {
-                eventRect.rectF = null;
+            synchronized (mSync) {
+                for (EventRect eventRect: mEventRects) {
+                    eventRect.rectF = null;
+                }
             }
         }
 
